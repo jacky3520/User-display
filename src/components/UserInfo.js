@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import UserCard from "./UserCard";
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
 
 function UserInfo() {
   const [users, setUsers] = useState([]);
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [sortBy, setSortBy] = useState('name'); // Default sorting category
+  const [sortBy, setSortBy] = useState("name");
   const [searchKeyword, setSearchKeyword] = useState('');
 
   useEffect(() => {
@@ -19,23 +18,27 @@ function UserInfo() {
   }, []);
 
   useEffect(() => {
-    console.log(users);
-  }, [users]);
+    const filteredResults = users.filter(
+      user =>
+        user.name.toLowerCase().includes(searchKeyword) ||
+        user.email.toLowerCase().includes(searchKeyword) ||
+        user.phone.toLowerCase().includes(searchKeyword)
+    );
+
+    setFilteredUsers(filteredResults);
+  }, [users, searchKeyword]);
+
+  useEffect(() => {
+    const sortedResults = [...filteredUsers].sort((a, b) =>
+      a[sortBy].localeCompare(b[sortBy])
+    );
+    setFilteredUsers(sortedResults);
+  }, [filteredUsers, sortBy]);
 
   const handleSearch = event => {
     const keyword = event.target.value.toLowerCase();
     setSearchKeyword(keyword);
-
-    const filteredResults = users.filter(
-      user =>
-        user.name.toLowerCase().includes(keyword) ||
-        user.email.toLowerCase().includes(keyword) ||
-        user.phone.toLowerCase().includes(keyword)
-    );
-
-    setFilteredUsers(filteredResults);
   };
-
 
   return (
     <div>
@@ -65,7 +68,6 @@ function UserInfo() {
         ))}
       </div>
     </div>
-
   );
 }
 
